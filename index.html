@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тоон оюуны өмчийн сорил</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Монгол «Ө, Ү» үсгийг 100% алдаагүй таньдаг кирилл дэмжлэгтэй фонтууд -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    body {
+      font-family: 'Roboto', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+    }
+    .mono {
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col items-center justify-between p-4 sm:p-6 md:p-10">
+
+  <!-- Толгой хэсэг -->
+  <header class="w-full max-w-2xl mx-auto mb-6 text-center">
+    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-200/80 text-slate-700 text-xs font-semibold uppercase tracking-wider mb-3">
+      Мэдлэг бататгах сорил
+    </div>
+    <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+      Тоон оюуны өмчийн сорил
+    </h1>
+    <p class="text-sm text-slate-600 mt-2">
+      Цахим орчин дахь бодит кэйсүүдийг уншиж, хамгийн зөв шийдлийг сонгоорой.
+    </p>
+  </header>
+
+  <!-- Үндсэн карт -->
+  <main class="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden">
+    
+    <!-- Явцын шугам -->
+    <div class="h-2 w-full bg-slate-100 relative">
+      <div id="progress-bar" class="h-full bg-slate-800 transition-all duration-300 ease-out" style="width: 20%;"></div>
+    </div>
+
+    <!-- Асуултын талбар -->
+    <div id="quiz-container" class="p-6 sm:p-8">
+      
+      <!-- Дугаарлалт -->
+      <div class="flex items-center justify-between gap-2 mb-4">
+        <span id="question-index" class="text-xs font-bold uppercase tracking-wider text-slate-600 mono">
+          Асуулт 1 / 5
+        </span>
+      </div>
+
+      <!-- Кэйсийн эх бичвэр -->
+      <div id="scenario-box" class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-5 text-sm sm:text-base text-slate-700 leading-relaxed font-medium">
+        Ачааллаж байна...
+      </div>
+
+      <!-- Асуулт -->
+      <h2 id="question-text" class="text-lg sm:text-xl font-bold text-slate-900 mb-6 leading-snug">
+        Асуулт ачааллаж байна...
+      </h2>
+
+      <!-- Сонголтууд -->
+      <div id="options-list" class="space-y-3">
+        <!-- Сонголтууд энд автоматаар орж ирнэ -->
+      </div>
+
+      <!-- Зөв/Буруугийн тайлбар хайрцаг -->
+      <div id="feedback-box" class="mt-6 p-4 rounded-xl border text-sm hidden">
+        <div>
+          <h4 id="feedback-title" class="font-bold text-slate-900 mb-1"></h4>
+          <p id="feedback-desc" class="text-slate-600 leading-relaxed"></p>
+        </div>
+      </div>
+
+      <!-- Дараах асуултын товч -->
+      <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end">
+        <button id="next-btn" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed" disabled>
+          Дараах асуулт →
+        </button>
+      </div>
+    </div>
+
+    <!-- Дүн гарах карт -->
+    <div id="result-container" class="p-6 sm:p-8 text-center hidden">
+      <div class="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center text-3xl mx-auto mb-4">
+        📋
+      </div>
+      <h2 class="text-2xl font-bold text-slate-900 mb-2">Сорил амжилттай дууслаа!</h2>
+      <p id="result-subtitle" class="text-sm text-slate-600 mb-6">Бүх асуултад хариулж дууслаа.</p>
+
+      <div class="inline-block bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-6">
+        <div class="text-xs font-bold uppercase tracking-wider text-slate-600 mono mb-1">Нийт оноо</div>
+        <div id="score-text" class="text-4xl font-extrabold text-slate-900 tracking-tight">0 / 5</div>
+        <div id="percent-badge" class="mt-2 text-xs font-semibold px-2.5 py-0.5 rounded-full inline-block bg-slate-200 text-slate-800">0%</div>
+      </div>
+
+      <div id="summary-list" class="text-left space-y-3 mb-6">
+        <!-- Асуултуудын хураангуй -->
+      </div>
+
+      <button id="restart-btn" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-semibold text-sm transition-all">
+        Дахин ажиллах ↻
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Хөл хэсэг -->
+  <footer class="mt-6 text-xs text-slate-500 text-center">
+    Тоон оюуны өмчийн хичээл • Суралцагчийн өөрийн үнэлгээ
+  </footer>
+
+  <script>
+    const questions = [
+      {
+        scenario: "Кэйс 1: Цахим сүлжээнд «Canva Pro 1 жилийн эрх 30,000 төгрөг» гэсэн зар гарчээ. Албан ёсны 1 жилийн эрх нь ойролцоогоор 110–120 ам.доллар (380,000 гаруй төгрөг) байдаг.",
+        question: "Бодит баримт, лицензийн үүднээс шинжилбэл энэхүү 30,000 төгрөгийн зарын хамгийн бодит учир шалтгаан юу вэ?",
+        options: [
+          { text: "Canva компаниас сурагчдад зориулсан албан ёсны хямдрал зарласан", correct: false },
+          { text: "Сургууль, багш нарт үнэгүй олгодог боловсролын эрхийг бусдад дамлан худалдсан лицензийн зөрчил", correct: true },
+          { text: "Монгол улсад зориулан тусгайлан гаргасан албан ёсны хөнгөлөлттэй үнэ", correct: false },
+          { text: "Хэрэглэгч өөрийн хийсэн бэлэн зургийн загваруудыг худалдаалж байгаа хэлбэр", correct: false }
+        ],
+        explanation: "Canva-ийн үйлчилгээний нөхцөлд боловсролын зориулалттай үнэгүй эрхийг бусдад мөнгөөр дамлан худалдахыг хатуу хориглодог бөгөөд энэ нь зохиогчийн эрх болон лицензийн гэрээг зөрчиж буй үйлдэл юм."
+      },
+      {
+        scenario: "Кэйс 2: Сурагч 50,000 төгрөгөөр онлайн сургалт худалдан авчээ. Дараа нь тэрээр ангийн найзууддаа туслах зорилгоор хичээлийн бичлэгүүд болон номын PDF файлыг нь Telegram группт татаж тавив.",
+        question: "Энэ үйлдэл нь тоон оюуны өмчийн үүднээс ямар зөрчилд тооцогдох вэ?",
+        options: [
+          { text: "Өөрөө худалдаж авсан учраас хүссэн хүндээ үнэгүй хуваалцах бүрэн эрхтэй", correct: false },
+          { text: "Мөнгө олоогүй, зөвхөн тусалсан тул зохиогчийн эрх зөрчигдөөгүй", correct: false },
+          { text: "Зохиогчийн ашиг олох онцгой эрх болон дижитал бүтээлийг олон нийтэд түгээх эрхийг шууд зөрчсөн", correct: true },
+          { text: "Сургалтын материал нь нийтийн өмч тул хэн ч чөлөөтэй тараах боломжтой", correct: false }
+        ],
+        explanation: "Төлбөртэй контентыг худалдан авсан нь тухайн хүнд зөвхөн хувьдаа суралцах эрхийг олгодог бөгөөд зөвшөөрөлгүйгээр олон нийтэд хуулбарлан түгээх нь зохиогчийн эрхийн хууль зөрчдөг."
+      },
+      {
+        scenario: "Кэйс 3: Сурагчид илтгэлдээ оруулах чанартай зураг хайж байгаад дундуураа усны тэмдэгтэй (watermark) зураг олов. Зургийн хамгаалалтын тэмдгийг зөвшөөрөлгүй арилгах нь зохиогчийн эрхийг зөрчинө.",
+        question: "Оюуны өмчийг хүндэтгэн, хууль зөрчихгүйгээр чанартай зураг авах хамгийн зөв шийдэл аль нь вэ?",
+        options: [
+          { text: "Усны тэмдгийг нь гар утсаараа тасдаж авах", correct: false },
+          { text: "Unsplash, Pixabay зэрэг чөлөөт лицензтэй (Creative Commons) сангуудаас үнэгүй зураг авах эсвэл өөрсдөө бүтээх", correct: true },
+          { text: "Зургийн доор «Google-ээс авсан» гэсэн тайлбар бичээд ашиглах", correct: false },
+          { text: "Зургийг фотошопоор засварлан эзэмшигчийн нэрийг арилгах", correct: false }
+        ],
+        explanation: "Зохиогчийн эрх зөрчиж хамгаалалтыг арилгахын оронд Creative Commons буюу нээлттэй, чөлөөт лицензтэй сангуудыг ашиглах нь хууль ёсны зөв гарц юм."
+      },
+      {
+        scenario: "Кэйс 4: Зарим хэрэглэгчид Adobe Photoshop, Microsoft Office зэрэг төлбөртэй програмуудыг хууль бус 'крэк' (cracked) код ашиглан үнэгүй суулгаж ашигладаг.",
+        question: "Хууль бус крэк програм ашигласнаар хэрэглэгчид тулгарах бодит эрсдэл юу вэ?",
+        options: [
+          { text: "Ямар ч эрсдэлгүй бөгөөд компьютерын ажиллагааг хурдасгадаг", correct: false },
+          { text: "Компьютерт хортой код (вирус) халдаж хувийн мэдээлэл, нууц үг алдагдах, систем гэмтэх эрсдэлтэй", correct: true },
+          { text: "Зөвхөн дэлгэцийн өнгө бүдгэрэхээс өөр сөрөг нөлөөгүй", correct: false },
+          { text: "Програмын хэмжээ багасдаг сул талтай", correct: false }
+        ],
+        explanation: "Хууль бус крэк програмууд нь ихэвчлэн троян, спайвер зэрэг хортой код дагуулж ирдэг тул хувийн мэдээлэл, өгөгдөл хулгайд алдагдах маш өндөр аюултай."
+      },
+      {
+        scenario: "Кэйс 5: Сурагч Canva Pro-ийн бүх боломжийг хичээл сургалтдаа ашиглахыг маш их хүсэж байгаа боловч төлбөр төлөх боломжгүй байна.",
+        question: "Түүнд хууль бус 30,000 төгрөгийн эрх авахгүйгээр хүссэн зүйлээ шийдэх хамгийн зөв хууль ёсны арга зам юу вэ?",
+        options: [
+          { text: "Сургууль, багшаараа дамжуулан Canva-ийн албан ёсны үнэгүй Боловсролын эрхэд (Canva for Education) хамрагдах", correct: true },
+          { text: "Өөр хүний нэвтрэх эрхийг сэмхэн авч хэрэглэх", correct: false },
+          { text: "Хууль бус эрхийг нэг сар ашиглаад шууд устгах", correct: false },
+          { text: "Сошиалд хуурамч зар тавьж мөнгө олох", correct: false }
+        ],
+        explanation: "Canva компани нь сургууль, багш, сурагчдад зориулан 'Canva for Education' хөтөлбөрийг 100% үнэ төлбөргүй олгодог тул сургуулийнхаа албан шугамаар бүртгүүлэн ашиглах нь хууль ёсны хамгийн шилдэг шийдэл юм."
+      }
+    ];
+
+    let currentQuestion = 0;
+    let score = 0;
+    let userAnswers = [];
+
+    const progressBar = document.getElementById("progress-bar");
+    const questionIndex = document.getElementById("question-index");
+    const scenarioBox = document.getElementById("scenario-box");
+    const questionText = document.getElementById("question-text");
+    const optionsList = document.getElementById("options-list");
+    const feedbackBox = document.getElementById("feedback-box");
+    const feedbackTitle = document.getElementById("feedback-title");
+    const feedbackDesc = document.getElementById("feedback-desc");
+    const nextBtn = document.getElementById("next-btn");
+
+    const quizContainer = document.getElementById("quiz-container");
+    const resultContainer = document.getElementById("result-container");
+    const scoreText = document.getElementById("score-text");
+    const percentBadge = document.getElementById("percent-badge");
+    const summaryList = document.getElementById("summary-list");
+    const restartBtn = document.getElementById("restart-btn");
+
+    function loadQuestion(index) {
+      const q = questions[index];
+      
+      progressBar.style.width = `${((index + 1) / questions.length) * 100}%`;
+      questionIndex.textContent = `Асуулт ${index + 1} / ${questions.length}`;
+      
+      scenarioBox.textContent = q.scenario;
+      questionText.textContent = q.question;
+
+      feedbackBox.classList.add("hidden");
+      nextBtn.disabled = true;
+
+      optionsList.innerHTML = "";
+      q.options.forEach((opt, optIdx) => {
+        const btn = document.createElement("button");
+        btn.className = "w-full text-left p-3.5 sm:p-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 text-sm font-medium transition-all flex items-center justify-between";
+        btn.innerHTML = `
+          <span>${opt.text}</span>
+          <span class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center text-xs ml-3 flex-shrink-0"></span>
+        `;
+        btn.addEventListener("click", () => selectOption(optIdx));
+        optionsList.appendChild(btn);
+      });
+    }
+
+    function selectOption(selectedIdx) {
+      const q = questions[currentQuestion];
+      const isCorrect = q.options[selectedIdx].correct;
+      userAnswers.push({ questionIdx: currentQuestion, selectedIdx, isCorrect });
+
+      if (isCorrect) score++;
+
+      const buttons = optionsList.querySelectorAll("button");
+      buttons.forEach((btn, idx) => {
+        btn.disabled = true;
+        btn.classList.remove("hover:bg-slate-50");
+
+        if (q.options[idx].correct) {
+          btn.classList.add("bg-slate-800", "border-slate-800", "text-white");
+          btn.querySelector("span:last-child").className = "w-5 h-5 rounded-full bg-white text-slate-800 flex items-center justify-center text-xs font-bold ml-3 flex-shrink-0";
+          btn.querySelector("span:last-child").textContent = "✓";
+        } else if (idx === selectedIdx && !isCorrect) {
+          btn.classList.add("bg-slate-100", "border-slate-300", "text-slate-500");
+          btn.querySelector("span:last-child").className = "w-5 h-5 rounded-full bg-slate-300 text-white flex items-center justify-center text-xs font-bold ml-3 flex-shrink-0";
+          btn.querySelector("span:last-child").textContent = "✕";
+        } else {
+          btn.classList.add("opacity-50");
+        }
+      });
+
+      // Тайлбар харуулах
+      feedbackBox.classList.remove("hidden");
+      feedbackBox.className = "mt-6 p-4 rounded-xl border bg-slate-50 border-slate-200 text-slate-800 text-sm";
+      feedbackTitle.textContent = isCorrect ? "Зөв хариулт!" : "Буруу сонголт";
+      feedbackDesc.textContent = q.explanation;
+
+      nextBtn.disabled = false;
+    }
+
+    nextBtn.addEventListener("click", () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion(currentQuestion);
+      } else {
+        showResult();
+      }
+    });
+
+    function showResult() {
+      quizContainer.classList.add("hidden");
+      resultContainer.classList.remove("hidden");
+
+      scoreText.textContent = `${score} / ${questions.length}`;
+      const percentage = Math.round((score / questions.length) * 100);
+      percentBadge.textContent = `${percentage}% Амжилт`;
+
+      summaryList.innerHTML = "";
+      userAnswers.forEach((ans, i) => {
+        const item = document.createElement("div");
+        item.className = "p-3 rounded-xl border border-slate-200 bg-slate-50 flex items-center justify-between text-xs";
+        item.innerHTML = `
+          <span class="font-medium text-slate-700">Кэйс ${i + 1}</span>
+          <span class="px-2 py-0.5 rounded font-semibold ${ans.isCorrect ? 'bg-slate-800 text-white' : 'bg-slate-200 text-slate-600'}">
+            ${ans.isCorrect ? 'Зөв (+1)' : 'Буруу (0)'}
+          </span>
+        `;
+        summaryList.appendChild(item);
+      });
+    }
+
+    restartBtn.addEventListener("click", () => {
+      currentQuestion = 0;
+      score = 0;
+      userAnswers = [];
+      resultContainer.classList.add("hidden");
+      quizContainer.classList.remove("hidden");
+      loadQuestion(0);
+    });
+
+    // Сорилыг эхлүүлэх
+    loadQuestion(0);
+  </script>
+</body>
+</html>
